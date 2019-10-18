@@ -11,6 +11,11 @@
 #include <list>
 #include <string>
 #include <random>
+
+#define SIZE 10000
+#define RANGE 65535
+#define TESTS 10000
+
 using namespace std;
 
 /**
@@ -169,10 +174,37 @@ void radixSortList(list<int> &l, int range) {
   }
 }
 
+void startClock(timespec &time) {
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time);
+}
+
+long getTime(timespec &time) {
+  timespec curr_time;
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
+  long t = curr_time.tv_nsec-time.tv_nsec;
+  return t;
+}
+
 int main() {
   //Variables
   mt19937 gen(123); //init random generator
+  timespec time;
 
+  //random vector
+  vector<int> randVect(SIZE);
+  generateVector(randVect,0,RANGE,gen);
+
+  //test
+  long timeSum = 0;
+  for(int i = 0; i < TESTS; ++i) {
+    vector<int> c = randVect;
+    startClock(time);
+    //CODE TO BE TEMPORALY TESTED
+    countSort(c,RANGE);
+    //END
+    timeSum += getTime(time);
+  }
+  cout << "Time(ns): " <<  timeSum / TESTS << '\n';
 
   return 0;
 }
