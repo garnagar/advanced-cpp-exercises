@@ -75,7 +75,7 @@ int order(int num) {
 * @param v vector
 * @param min minmum of the range
 * @param max maximum of the range
-* @gen random generator
+* @param gen random generator
 */
 void generateVector(vector<int> &v, int min, int max, mt19937 &gen) {
   uniform_int_distribution<int> dist(min,max);
@@ -89,7 +89,7 @@ void generateVector(vector<int> &v, int min, int max, mt19937 &gen) {
 * @param l list
 * @param min minmum of the range
 * @param max maximum of the range
-* @gen random generator
+* @param gen random generator
 */
 void generateList(list<int> &l, int min, int max, mt19937 &gen) {
   uniform_int_distribution<int> dist(min,max);
@@ -174,10 +174,19 @@ void radixSortList(list<int> &l, int range) {
   }
 }
 
+/**
+* Starts or restarts the time counter.
+* @param time time counter variable
+*/
 void startClock(timespec &time) {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time);
 }
 
+/**
+* Gets current time. Does not reset the time counter.
+* @param time time counter variable
+* @return Time since the start of the time counter in ns.
+*/
 long getTime(timespec &time) {
   timespec curr_time;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
