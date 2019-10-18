@@ -6,7 +6,93 @@
 
 #include <iostream>
 #include <time.h>
+#include <vector>
+#include <array>
+#include <list>
+#include <string>
+#include <random>
 using namespace std;
+
+/**
+* Prints elements of vector.
+* @param vec vector to be printed
+*/
+void dispVector(vector<int> &vec) {
+  for(auto &e:vec) {
+    cout << e << ", ";
+  }
+  cout << '\n';
+}
+
+/**
+* Prints elements of list.
+* @param l list to be printed
+*/
+void dispList(list<int> l) {
+  list<int>::iterator it;
+  for(it = l.begin(); it != l.end(); ++it) {
+    cout << (*it) << ", ";
+  }
+  cout << '\n';
+}
+
+/**
+* Finds digit of number on specified index.
+* @param num number
+* @param index of digit in given number (0 = 1st order etc.)
+* @return Digit of given number on given index.
+*/
+int digit(int num, int index) {
+  for (int i = 0; i < index; ++i) {
+    num /= 10;
+  }
+  return num % 10;
+}
+
+/**
+* Finds order of given number. (1 = order 1, 10 = order 2 etc.)
+* @param num number
+* @return Order of the number.
+*/
+int order(int num) {
+  if(num == 0) return 1;
+  if(num < 0) num = -num;
+  int ord = 0;
+  while (num > 0) {
+    num /= 10;
+    ord++;
+  }
+  return ord;
+}
+
+/**
+* Fills given vector with random inteagers in the range.
+* @param v vector
+* @param min minmum of the range
+* @param max maximum of the range
+* @gen random generator
+*/
+void generateVector(vector<int> &v, int min, int max, mt19937 &gen) {
+  uniform_int_distribution<int> dist(min,max);
+  for(auto &e:v) {
+    e = dist(gen);
+  }
+}
+
+/**
+* Fills given list with random inteagers in the range.
+* @param l list
+* @param min minmum of the range
+* @param max maximum of the range
+* @gen random generator
+*/
+void generateList(list<int> &l, int min, int max, mt19937 &gen) {
+  uniform_int_distribution<int> dist(min,max);
+  list<int>::iterator it;
+  for(it = l.begin(); it != l.end(); ++it) {
+    (*it) = dist(gen);
+  }
+}
 
 /**
 * Sorts given vector of inteagers using count sort method.
@@ -17,17 +103,17 @@ void countSort(vector<int> &v, int range) {
   vector<int> c(range+1);
   vector<int> v2(v.size());
   //histogram
-  for(unsigned i = 0; i < v.size(); ++i) {
-    c.at(v.at(i))++;
+  for(auto &e:v) {
+    c.at(e)++;
   }
   //count starting idexses of element ids
-  for(unsigned i = 1; i < range+1; ++i) {
+  for(int i = 1; i < range+1; ++i) {
     c.at(i) = c.at(i)+c.at(i-1);
   }
   //construct sorted vector
-  for(unsigned i = 0; i < v.size(); ++i) {
-    v2.at(c.at(v.at(i))-1) = v.at(i); //-1 corrects for indexing from 0
-    c.at(v.at(i))--;
+  for(auto &e:v) {
+    v2.at(c.at(e)-1) = e; //-1 corrects for indexing from 0
+    c.at(e)--;
   }
   v = v2;
 }
@@ -41,15 +127,15 @@ void radixSort(vector<int> &v, int range) {
   array<vector<int>,10> bucket;
   for(int ord = 0; ord < order(range); ord++) {
     //put in buckets
-    for (int i = 0; i < v.size(); ++i) {
-      int d = digit(v.at(i),ord);
-      bucket.at(d).push_back(v.at(i));
+    for (auto &e:v) {
+      int d = digit(e,ord);
+      bucket.at(d).push_back(e);
     }
     //concatenate and save result of iteration
     int index = 0;
     for (int i = 0; i < 10; ++i) {
-      for(int j = 0; j < bucket.at(i).size(); ++j) {
-        v[index] = bucket.at(i).at(j);
+      for(auto &e:bucket.at(i)) {
+        v[index] = e;
         index++;
       }
       bucket.at(i).clear();
@@ -74,8 +160,8 @@ void radixSortList(list<int> &l, int range) {
     //concatenate and save result of iteration
     it = l.begin();
     for (int i = 0; i < 10; ++i) {
-      for(int j = 0; j < bucket.at(i).size(); ++j) {
-        (*it) = bucket.at(i).at(j);
+      for(auto &e:bucket.at(i)) {
+        (*it) = e;
         it++;
       }
       bucket.at(i).clear();
@@ -85,14 +171,7 @@ void radixSortList(list<int> &l, int range) {
 
 int main() {
   //Variables
-  timespec ini_time;
-  timespec end_time;
-
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ini_time);
-
-
-
-  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_time);
+  mt19937 gen(123); //init random generator
 
 
   return 0;
