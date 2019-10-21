@@ -185,12 +185,13 @@ void startClock(timespec &time) {
 /**
 * Gets current time. Does not reset the time counter.
 * @param time time counter variable
-* @return Time since the start of the time counter in ns.
+* @return Time since the start of the time counter in ms.
 */
-long getTime(timespec &time) {
+double getTimeMs(timespec &time) {
   timespec curr_time;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
-  long t = curr_time.tv_nsec-time.tv_nsec;
+  double t = (curr_time.tv_sec-time.tv_sec)*1000;
+  t += (double)(curr_time.tv_nsec-time.tv_nsec)/1000000;
   return t;
 }
 
@@ -204,16 +205,16 @@ int main() {
   generateVector(randVect,0,RANGE,gen);
 
   //test
-  long timeSum = 0;
+  double timeSum = 0;
   for(int i = 0; i < TESTS; ++i) {
     vector<int> c = randVect;
     startClock(time);
     //CODE TO BE TEMPORALY TESTED
     countSort(c,RANGE);
     //END
-    timeSum += getTime(time);
+    timeSum += getTimeMs(time);
   }
-  cout << "Time(ns): " <<  timeSum / TESTS << '\n';
+  cout << "Time (ms): " <<  timeSum / TESTS << '\n';
 
   return 0;
 }
