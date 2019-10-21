@@ -14,7 +14,7 @@
 
 #define SIZE 10000
 #define RANGE 65535
-#define TESTS 1000
+#define TESTS 10000
 
 using namespace std;
 
@@ -132,17 +132,28 @@ void countSort2(vector<int> &v, int range) {
   vector<int> v2(v.size());
   //histogram
   for(auto &e:v) {
-    ++c[e];
+    ++c.at(e);
   }
   //count starting idexses of element ids
-  for(int i = 1; i < range+1; ++i) {
-    c[i] = c[i]+c[i-1];
+  if(range%2 == 0) {
+    for(int i = 2; i < range+1; i += 2) {
+      c.at(i-1) = c.at(i-1)+c.at(i-2);
+      c.at(i) = c.at(i)+c.at(i-1);
+    }
+  } else {
+    c.at(0) = c.at(0)+c.at(1);
+    for(int i = 3; i < range+1; i += 2) {
+      c.at(i-1) = c.at(i-1)+c.at(i-2);
+      c.at(i) = c.at(i)+c.at(i-1);
+    }
   }
+
   //construct sorted vector
   for(auto &e:v) {
-    v2[c[e]-1] = e; //-1 corrects for indexing from 0
-    --c[e];
+    v2.at(c.at(e)-1) = e; //-1 corrects for indexing from 0
+    --c.at(e);
   }
+
   v = v2;
 }
 
@@ -163,7 +174,7 @@ void radixSort(vector<int> &v, int range) {
     int index = 0;
     for (int i = 0; i < 10; ++i) {
       for(auto &e:bucket.at(i)) {
-        v[index] = e;
+        v.at(index) = e;
         index++;
       }
       bucket.at(i).clear();
@@ -208,12 +219,13 @@ void startClock(timespec &time) {
 /**
 * Gets current time. Does not reset the time counter.
 * @param time time counter variable
-* @return Time since the start of the time counter in us.
+* @return Time since the start of the time counter in ms.
 */
-long getTime(timespec &time) {
+double getTimeMs(timespec &time) {
   timespec curr_time;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
-  long t = curr_time.tv_nsec-time.tv_nsec;
+  double t = (curr_time.tv_sec-time.tv_sec)*1000;
+  t += (double)(curr_time.tv_nsec-time.tv_nsec)/1000000;
   return t;
 }
 
@@ -227,27 +239,28 @@ int main() {
   generateVector(randVect,0,RANGE,gen);
 
   //test
-  long long timeSum = 0;
+  double timeSum = 0;
+  vector<int> c;
   for(int i = 0; i < TESTS; ++i) {
-    vector<int> c = randVect;
+    c = randVect;
     startClock(time);
     //CODE TO BE TEMPORALY TESTED
     countSort(c,RANGE);
     //END
-    timeSum += getTime(time);
+    timeSum += getTimeMs(time);
   }
-  cout << "Time 1 (ns): " <<  timeSum / TESTS << '\n';
+  cout << "Time 1 (ms): " <<  timeSum / TESTS << '\n';
 
   timeSum = 0;
   for(int i = 0; i < TESTS; ++i) {
-    vector<int> c = randVect;
+    c = randVect;
     startClock(time);
     //CODE TO BE TEMPORALY TESTED
     countSort2(c,RANGE);
     //END
-    timeSum += getTime(time);
+    timeSum += getTimeMs(time);
   }
-  cout << "Time 2 (ns): " <<  timeSum / TESTS << '\n';
+  cout << "Time 2 (ms): " <<  timeSum / TESTS << '\n';
 
   return 0;
 }
