@@ -1,4 +1,4 @@
-# Advanced Programming Lab Excercise 02
+# Advanced Programming Lab Excercise 02 Optimisations
 
 ## 1 Count Sort
 
