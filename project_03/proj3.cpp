@@ -13,10 +13,14 @@
 #include <map>
 #include <set>
 #include <unordered_map>
-
 #include <cwchar>
 #include <locale>
+#include <time.h>
+
+#define TESTS 10000
+
 using namespace std;
+
 typedef basic_string<wchar_t> wstring;
 
 static locale l1("es_ES.utf8");
@@ -53,6 +57,27 @@ struct comp
         }
 };
 
+/**
+ * Starts or restarts the time counter.
+ * @param time time counter variable
+ */
+void startClock(timespec &time) {
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time);
+}
+
+/**
+ * Gets current time. Does not reset the time counter.
+ * @param time time counter variable
+ * @return Time since the start of the time counter in ms.
+ */
+double getTimeMs(timespec &time) {
+        timespec curr_time;
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
+        double t = (curr_time.tv_sec-time.tv_sec)*1000;
+        t += (double)(curr_time.tv_nsec-time.tv_nsec)/1000000;
+        return t;
+}
+
 // Read the contents of a textfile using a spanish locale
 wstring getFileContent(const char* filename)
 {
@@ -77,7 +102,7 @@ vector<wstring> readFile(const char* filename) {
         return result;
 }
 
-map<wstring,int> countWordsMap(vector<string> const &input){
+map<wstring,int> countWordsMap(vector<wstring> const &input){
         map<wstring, int> result;
         for(auto const& i: input) {
                 result[i]++;
@@ -85,7 +110,7 @@ map<wstring,int> countWordsMap(vector<string> const &input){
         return result;
 }
 
-unordered_map<wstring,int> countWordsUmap(vector<string> const &input){
+unordered_map<wstring,int> countWordsUmap(vector<wstring> const &input){
         unordered_map<wstring, int> result;
         for(auto const& i: input) {
                 result[i]++;
@@ -94,19 +119,54 @@ unordered_map<wstring,int> countWordsUmap(vector<string> const &input){
 }
 
 typedef pair<wstring, int> pairs;
-set<pairs> getTopWords(map<wstring,int> unsorted, int numOfWords = 30) {
-        // create a empty vector of pairs
+set<pairs> getTopWords(vector<wstring> const &input, int numOfWords = 30) {
+        map<wstring,int> unsorted = countWordsMap(input);
         set<pairs, comp> set(unsorted.begin(), unsorted.end());
+        if(set.size() < numOfWords) {
+                return set;
+        }
         set<pairs> result(set.begin(), next(set.begin(), numOfWords))
         return result;
 }
 
 int main(){
 
-        // TODO TODO TODO TODO TODO TODO
-        // wstring s = L"ohad computer science";
-        // wcout.imbue(l1);
-        // wcout << s << endl;
+        vector<wstring> text1 = readFile("./texto1.txt");
+        vector<wstring> text2 = readFile("./texto2.txt");
+        map<wstring,int> text1Map = countWordsMap(text1);
+        for (auto const& item: text1Map) {
+                wcout << item.first << L" : " << item.second << endl;
+        }
+
+        // Testing counting the words using map
+        double timeSum = 0;
+        map<wstring,int> text2Map;
+        for (int i = 0; i < TESTS; ++i) {
+                startClock(time);
+                //CODE TO BE TEMPORALY TESTED
+                text2Map = countWordsMap(text2);
+                //END
+                timeSum += getTimeMs(time);
+        }
+        wcout << L"Time when using the map(ms): " <<  timeSum / TESTS << endl;
+
+        // Testing counting the words using unordered map
+        timeSum = 0;
+        unordered_map<wstring,int> text2Umap;
+        for (int i = 0; i < TESTS; ++i) {
+                startClock(time);
+                //CODE TO BE TEMPORALY TESTED
+                text2Umap = countWordsUmap(text2);
+                //END
+                timeSum += getTimeMs(time);
+        }
+        wcout << L"Time when using the unordered map(ms): " <<  timeSum / TESTS << endl;
+
+        // Outputing the top 30 used words
+        set<pairs> topThirty = getTopWords(text2);
+        for (auto const& item : topThirty) {
+                wcout << item.first << L" : " << item.second << endl;
+        }
 
 
         return 0;
