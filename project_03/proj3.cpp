@@ -21,10 +21,12 @@
 
 using namespace std;
 
-typedef basic_string<wchar_t> wstring;
+//typedef basic_string<wchar_t> wstring;
 
+// no need for a global variable
 static locale l1("es_ES.utf8");
 
+// no need for a whitespace structure
 struct modified_whitespace: std::ctype<wchar_t> {
 	bool do_is(mask m, char_type c) const {
 		if ((m & space) && c == L' ') {
@@ -43,6 +45,7 @@ struct modified_whitespace: std::ctype<wchar_t> {
 	}
 };
 
+// replace with lambda
 struct comp {
 	template<typename T>
 	bool operator()(const T &l, const T &r) const {
@@ -114,6 +117,7 @@ unordered_map<wstring, int> countWordsUmap(vector<wstring> const &input) {
 	return result;
 }
 
+// use multimap instead of set
 typedef pair<wstring, int> pairs;
 set<pairs, comp> getTopWords(vector<wstring> const &input,
 		unsigned int numOfWords = 30) {
@@ -177,4 +181,3 @@ int main() {
 	return 0;
 
 }
-
