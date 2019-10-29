@@ -21,31 +21,49 @@
 
 using namespace std;
 
-//typedef basic_string<wchar_t> wstring;
-
-// no need for a global variable
-static locale l1("es_ES.utf8");
-
-// no need for a whitespace structure
+/**
+* Modified whitespace definition to include all Spanish non-letter characters.
+*/
 struct modified_whitespace: std::ctype<wchar_t> {
 	bool do_is(mask m, char_type c) const {
 		if ((m & space) && c == L' ') {
-			return true; // space will be classified as whitespace
+			return true;
 		}
 		if ((m & space) && c == L',') {
-			return true; // comma will be classified as whitespace
+			return true;
 		}
 		if ((m & space) && c == L'.') {
-			return true; // point will be classified as whitespace
+			return true;
 		}
 		if ((m & space) && c == L'-') {
-			return true; // dash will be classified as whitespace
+			return true;
 		}
+		if ((m & space) && c == L';') {
+			return true;
+		}
+		if ((m & space) && c == L'?') {
+			return true;
+		}
+		if ((m & space) && c == L'¿') {
+			return true;
+		}
+		if ((m & space) && c == L'!') {
+			return true;
+		}
+		if ((m & space) && c == L'¡') {
+			return true;
+		}
+		if ((m & space) && c == L'«') {
+			return true;
+		}
+		if ((m & space) && c == L'»') {
+			return true;
+		}
+
 		return ctype::do_is(m, c); // leave the rest to the parent class
 	}
 };
 
-// replace with lambda
 struct comp {
 	template<typename T>
 	bool operator()(const T &l, const T &r) const {
@@ -77,8 +95,13 @@ double getTimeMs(timespec &time) {
 	return t;
 }
 
-// Read the contents of a textfile using a spanish locale
+/**
+* Reads the contents of a textfile using a spanish locale.
+* @param filename path to the textfile
+* @return File content as wstring.
+*/
 wstring getFileContent(const char *filename) {
+	static locale l1("es_ES.utf8");
 	wifstream wif(filename);
 	wif.imbue(l1);
 	wstringstream wss;
@@ -86,8 +109,13 @@ wstring getFileContent(const char *filename) {
 	return wss.str();
 }
 
-// reads the file and returns all the words as a vector
+/**
+* Reads the contents of a textfile and makes vector from all words.
+* @param filename path to the textfile
+* @return Vector of wstrings of all words.
+*/
 vector<wstring> readFile(const char *filename) {
+	static locale l1("es_ES.utf8");
 	vector<wstring> result;
 	wstring token;
 	wstring fileContent = getFileContent(filename);
@@ -101,6 +129,11 @@ vector<wstring> readFile(const char *filename) {
 	return result;
 }
 
+/**
+* Counts words in input wstring.
+* @param input wstring to count words in
+* @return Map of wstring and intager pairs in form <word, number of occurences>.
+*/
 map<wstring, int> countWordsMap(vector<wstring> const &input) {
 	map<wstring, int> result;
 	for (auto const &i : input) {
@@ -109,6 +142,11 @@ map<wstring, int> countWordsMap(vector<wstring> const &input) {
 	return result;
 }
 
+/**
+* Counts words in input wstring.
+* @param input wstring to count words in
+* @return Unorderd map of wstring and intager pairs in form <word, number of occurences>.
+*/
 unordered_map<wstring, int> countWordsUmap(vector<wstring> const &input) {
 	unordered_map<wstring, int> result;
 	for (auto const &i : input) {
@@ -117,8 +155,13 @@ unordered_map<wstring, int> countWordsUmap(vector<wstring> const &input) {
 	return result;
 }
 
-// use multimap instead of set
 typedef pair<wstring, int> pairs;
+/**
+* Counts words in input wstring and outputs top X words.
+* @param input wstring to count words in
+* @param numOfWords number of top words to output
+* @return Set of X words with most occurences in form <word, number of occurences>.
+*/
 set<pairs, comp> getTopWords(vector<wstring> const &input,
 		unsigned int numOfWords = 30) {
 	map<wstring, int> unsorted = countWordsMap(input);
@@ -131,6 +174,7 @@ set<pairs, comp> getTopWords(vector<wstring> const &input,
 }
 
 int main() {
+	static locale l1("es_ES.utf8");
 	std::locale::global(std::locale("es_ES.utf8"));
 	modified_whitespace *my_ws = new modified_whitespace;
 	std::wcout.imbue(std::locale(l1, my_ws));
