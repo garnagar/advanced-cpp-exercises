@@ -14,8 +14,8 @@ using namespace std;
 class IMemoryManager
 {
 public:
-virtual void* allocate(size_t) = 0;
-virtual void   free(void*) = 0;
+  virtual void* allocate(size_t) = 0;
+  virtual void free(void*) = 0;
 };
 
 class MemoryManager : public IMemoryManager
@@ -34,107 +34,104 @@ class MemoryManager : public IMemoryManager
 //the end of the block .The next byte will contain the size of block and the
 //of the byte shall indicate wheteher this block is free or available.
 private:
-std::forward_list<void*>     Byte24PtrList;
-std::vector<void*>    MemoryPoolList;
-friend struct Prueba;
-void InitialiseByte24List(void* );
+  std::forward_list<void*> Byte24PtrList;
+  std::vector<void*> MemoryPoolList;
+  friend struct Prueba;
+  void InitialiseByte24List(void* );
 public:
-MemoryManager( ) {
-}
-~MemoryManager( ) {
-}
-void* allocate(size_t);
-void   free(void*);
-
+  MemoryManager() {}
+  ~MemoryManager() {}
+  void* allocate(size_t);
+  void free(void*);
 };
 
 MemoryManager gMemoryManager;
 
 struct Prueba {
-        float f1, f2;
-        int i1, i2, i3;
+    float f1, f2;
+    int i1, i2, i3;
 
-        inline void* operator new(size_t size)
-        {
-                return gMemoryManager.allocate(sizeof(Prueba));
-        }
+    inline void* operator new(size_t size)
+    {
+        return gMemoryManager.allocate(sizeof(Prueba));
+    }
 
-        inline void operator delete(void* object)
-        {
-                gMemoryManager.free(object);
-        }
+    inline void operator delete(void* object)
+    {
+        gMemoryManager.free(object);
+    }
 };
 
 const int PRUEBA_SIZE = sizeof(Prueba);
 const int POOL_SIZE = 1024; //number of elements in a single pool
-                            //can be chosen based on application requirements
+                //can be chosen based on application requirements
 const int MAX_BLOCK_SIZE = 20; //depending on the application it may change
-                               //In above case it came as 36
+                   //In above case it came as 36
 
 
 void* MemoryManager::allocate(size_t size)
 {
-        void* base = 0;
-        switch(size)
+    void* base = 0;
+    switch(size)
+    {
+    case PRUEBA_SIZE: //20
+    {
+        if(Byte24PtrList.empty())
         {
-        case PRUEBA_SIZE: //20
-        {
-                if(Byte24PtrList.empty())
-                {
-                        base = new char [24 * POOL_SIZE];
-                        MemoryPoolList.push_back(base);
-                        InitialiseByte24List(base);
-                }
-                void* blockPtr =  Byte24PtrList.front();
-                *((static_cast<char*>(blockPtr)) + 22) = 32; //size of block set
-                *((static_cast<char*>(blockPtr)) + 23) = 0; //block is no longer free
-                Byte24PtrList.pop_front();
-                return blockPtr;
+            base = new char [24 * POOL_SIZE];
+            MemoryPoolList.push_back(base);
+            InitialiseByte24List(base);
         }
-        default: break;
-        }
-        return 0;
+        void* blockPtr =  Byte24PtrList.front();
+        *((static_cast<char*>(blockPtr)) + 22) = 32; //size of block set
+        *((static_cast<char*>(blockPtr)) + 23) = 0; //block is no longer free
+        Byte24PtrList.pop_front();
+        return blockPtr;
+    }
+    default: break;
+    }
+    return 0;
 }
 
 void MemoryManager::free(void* object)
 {
-        char* init = static_cast<char*>(object);
+    char* init = static_cast<char*>(object);
 
-        while(1)
-        {
-                int count = 0;
-                while(*init != 0xde) //this loop shall never iterate more than
-                {       // MAX_BLOCK_SIZE times and hence is O(1)
-                        init++;
-                        count++;
-                        if(count > MAX_BLOCK_SIZE)
-                        {
-                                printf ("runtime heap memory corruption near %p", &object);
-                                exit(1);
-                        }
-                }
-                if(*(++init) == 0xad) // we have hit the guard bytes
-                        break; // from the outer while
+    while(1)
+    {
+        int count = 0;
+        while(*init != 0xde) //this loop shall never iterate more than
+        {       // MAX_BLOCK_SIZE times and hence is O(1)
+            init++;
+            count++;
+            if(count > MAX_BLOCK_SIZE)
+            {
+                printf ("runtime heap memory corruption near %p", &object);
+                exit(1);
+            }
         }
-        init++; // ignore size byte
-        init++;
-        *init = 1; // set free/available byte
+        if(*(++init) == 0xad) // we have hit the guard bytes
+            break; // from the outer while
+    }
+    init++; // ignore size byte
+    init++;
+    *init = 1; // set free/available byte
 }
 
 void MemoryManager::InitialiseByte24List(void* base)
 {
-        for (int i = 0; i< POOL_SIZE; ++i)
-        {
-                char* guardByteStart = &(static_cast<char*>(base)[i*24]) + 20;
-                *guardByteStart = 0xde;
-                guardByteStart++;
-                *guardByteStart = 0xad; //end of block
-                guardByteStart++;
-                *guardByteStart = 24; //sizeof block
-                guardByteStart++;
-                *guardByteStart = 1; //block  available
-                Byte24PtrList.push_front(&(static_cast<char*>(base)[i*24]));
-        }
+    for (int i = 0; i< POOL_SIZE; ++i)
+    {
+        char* guardByteStart = &(static_cast<char*>(base)[i*24]) + 20;
+        *guardByteStart = 0xde;
+        guardByteStart++;
+        *guardByteStart = 0xad; //end of block
+        guardByteStart++;
+        *guardByteStart = 24; //sizeof block
+        guardByteStart++;
+        *guardByteStart = 1; //block  available
+        Byte24PtrList.push_front(&(static_cast<char*>(base)[i*24]));
+    }
 }
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -147,7 +144,7 @@ void MemoryManager::InitialiseByte24List(void* base)
  * @param time time counter variable
  */
 void startClock(timespec &time) {
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time);
 }
 
 /**
@@ -156,11 +153,11 @@ void startClock(timespec &time) {
  * @return Time since the start of the time counter in ms.
  */
 double getTimeMs(timespec &time) {
-        timespec curr_time;
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
-        double t = (curr_time.tv_sec-time.tv_sec)*1000;
-        t += (double)(curr_time.tv_nsec-time.tv_nsec)/1000000;
-        return t;
+    timespec curr_time;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
+    double t = (curr_time.tv_sec-time.tv_sec)*1000;
+    t += (double)(curr_time.tv_nsec-time.tv_nsec)/1000000;
+    return t;
 }
 
 /**
@@ -168,17 +165,17 @@ double getTimeMs(timespec &time) {
  * @return Sum of numbers from 0 to 10000.
  */
 int costeMem1() {
-        Prueba v[SIZE];
-        volatile int suma = 0;
+    Prueba v[SIZE];
+    volatile int suma = 0;
 
-        for(int i = 0; i < SIZE; ++i) {
-                v[i].i1 = i;
-        }
+    for(int i = 0; i < SIZE; ++i) {
+        v[i].i1 = i;
+    }
 
-        for(int i = 0; i < SIZE; ++i) {
-                suma += v[i].i1;
-        }
-        return suma;
+    for(int i = 0; i < SIZE; ++i) {
+        suma += v[i].i1;
+    }
+    return suma;
 }
 
 /**
@@ -186,19 +183,19 @@ int costeMem1() {
  * @return Sum of numbers from 0 to 10000.
  */
 int costeMem2() {
-        Prueba* p = new Prueba[SIZE];
-        volatile int suma = 0;
+    Prueba* p = new Prueba[SIZE];
+    volatile int suma = 0;
 
-        for(int i = 0; i < SIZE; ++i) {
-                p[i].i1 = i;
-        }
+    for(int i = 0; i < SIZE; ++i) {
+        p[i].i1 = i;
+    }
 
-        for(int i = 0; i < SIZE; ++i) {
-                suma += p[i].i1;
-        }
+    for(int i = 0; i < SIZE; ++i) {
+        suma += p[i].i1;
+    }
 
-        delete [] p;
-        return suma;
+    delete [] p;
+    return suma;
 }
 
 /**
@@ -206,19 +203,19 @@ int costeMem2() {
  * @return Sum of numbers from 0 to 10000.
  */
 int costeMem3() {
-        unique_ptr<Prueba[]> p(new Prueba[SIZE]);
-        volatile int suma = 0;
+    unique_ptr<Prueba[]> p(new Prueba[SIZE]);
+    volatile int suma = 0;
 
-        for(int i = 0; i < SIZE; ++i) {
-                p[i].i1 = i;
-        }
+    for(int i = 0; i < SIZE; ++i) {
+        p[i].i1 = i;
+    }
 
-        for(int i = 0; i < SIZE; ++i) {
-                suma += p[i].i1;
-        }
+    for(int i = 0; i < SIZE; ++i) {
+        suma += p[i].i1;
+    }
 
-        p.reset();
-        return suma;
+    p.reset();
+    return suma;
 }
 
 /*template<typename T>
@@ -235,70 +232,70 @@ int costeMem3() {
  * @return Sum of numbers from 0 to 10000.
  */
 int costeMem4() {
-        shared_ptr<Prueba[]> sp(new Prueba[SIZE], [](Prueba *p) {
-                                delete[] p;
-                });
-        volatile int suma = 0;
-
-        // new try
-        /*int j = 0;
-           for(auto i : *sp) {
-           i.i1 = j;
-           j++;
-           }
-           for (auto i : *sp) {
-           suma += i.i1;
-           }*/
-
-        // old ones
-        /*
-           for(int i = 0; i < SIZE; ++i, data++) {
-                data->i1 = i;
-           }
-
-           for(int i = 0; i < SIZE; ++i, data--) {
-                suma += data->i1;
-           }
-           data = NULL;*/
-        sp = NULL;
-        return suma;
+    // shared_ptr<Prueba[]> sp(new Prueba[SIZE], [](Prueba *p) {
+    //             delete[] p;
+    //     });
+    // volatile int suma = 0;
+    //
+    // // new try
+    // /*int j = 0;
+    //    for(auto i : *sp) {
+    //    i.i1 = j;
+    //    j++;
+    //    }
+    //    for (auto i : *sp) {
+    //    suma += i.i1;
+    //    }*/
+    //
+    // // old ones
+    // /*
+    //    for(int i = 0; i < SIZE; ++i, data++) {
+    //     data->i1 = i;
+    //    }
+    //
+    //    for(int i = 0; i < SIZE; ++i, data--) {
+    //     suma += data->i1;
+    //    }
+    //    data = NULL;*/
+    // sp = NULL;
+    // return suma;
 }
 
 
 
 int main() {
 
-        timespec time;
+    timespec time;
 
-        cout << costeMem1() << '\n';
-        cout << costeMem2() << '\n';
-        cout << costeMem3() << endl;
-        cout << costeMem4() << endl;
+    cout << costeMem1() << '\n';
+    cout << costeMem2() << '\n';
+    cout << costeMem3() << endl;
+    cout << costeMem4() << endl;
 
-        startClock(time);
-        for(int i = 0; i < TESTS; ++i) {
-                costeMem1();
-        }
-        cout << "Time 1 (ms): " << (getTimeMs(time)/TESTS) << '\n';
+    startClock(time);
+    for(int i = 0; i < TESTS; ++i) {
+        costeMem1();
+    }
+    cout << "Time 1 (ms): " << (getTimeMs(time)/TESTS) << '\n';
 
-        startClock(time);
-        for(int i = 0; i < TESTS; ++i) {
-                costeMem2();
-        }
-        cout << "Time 2 (ms): " << (getTimeMs(time)/TESTS) << '\n';
+    startClock(time);
+    for(int i = 0; i < TESTS; ++i) {
+        costeMem2();
+    }
+    cout << "Time 2 (ms): " << (getTimeMs(time)/TESTS) << '\n';
 
-        startClock(time);
-        for(int i = 0; i < TESTS; ++i) {
-                costeMem3();
-        }
-        cout << "Time 3 (ms): " << (getTimeMs(time)/TESTS) << '\n';
+    startClock(time);
+    for(int i = 0; i < TESTS; ++i) {
+        costeMem3();
+    }
+    cout << "Time 3 (ms): " << (getTimeMs(time)/TESTS) << '\n';
 
-        startClock(time);
-        for(int i = 0; i < TESTS; ++i) {
-                costeMem4();
-        }
-        cout << "Time 4 (ms): " << (getTimeMs(time)/TESTS) << '\n';
+    startClock(time);
+    for(int i = 0; i < TESTS; ++i) {
+        costeMem4();
+    }
+    cout << "Time 4 (ms): " << (getTimeMs(time)/TESTS) << '\n';
 
 
-        return 0;
+    return 0;
 }
