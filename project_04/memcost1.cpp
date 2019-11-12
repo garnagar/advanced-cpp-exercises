@@ -100,7 +100,7 @@ int costeMem3() {
  * Tests cost of allocation in dynamic memory using a shared pointer.
  * @return Sum of numbers from 0 to 10000.
  */
- int costeMem4() {
+ int costeMem4() {  
    // shared_ptr<Prueba[]> p(new Prueba[SIZE]);
    // volatile int suma = 0;
    //
