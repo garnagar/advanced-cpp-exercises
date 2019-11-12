@@ -7,8 +7,8 @@
 using namespace std;
 
 struct Prueba {
-    float f1, f2;
-    int i1, i2, i3;
+        float f1, f2;
+        int i1, i2, i3;
 };
 
 /**
@@ -16,7 +16,7 @@ struct Prueba {
  * @param time time counter variable
  */
 void startClock(timespec &time) {
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time);
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time);
 }
 
 /**
@@ -25,11 +25,11 @@ void startClock(timespec &time) {
  * @return Time since the start of the time counter in ms.
  */
 double getTimeMs(timespec &time) {
-    timespec curr_time;
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
-    double t = (curr_time.tv_sec-time.tv_sec)*1000;
-    t += (double)(curr_time.tv_nsec-time.tv_nsec)/1000000;
-    return t;
+        timespec curr_time;
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &curr_time);
+        double t = (curr_time.tv_sec-time.tv_sec)*1000;
+        t += (double)(curr_time.tv_nsec-time.tv_nsec)/1000000;
+        return t;
 }
 
 /**
@@ -37,17 +37,17 @@ double getTimeMs(timespec &time) {
  * @return Sum of numbers from 0 to 10000.
  */
 int costeMem1() {
-    Prueba v[SIZE];
-    volatile int suma = 0;
+        Prueba v[SIZE];
+        volatile int suma = 0;
 
-    for(int i = 0; i < SIZE; ++i) {
-        v[i].i1 = i;
-    }
+        for(int i = 0; i < SIZE; ++i) {
+                v[i].i1 = i;
+        }
 
-    for(int i = 0; i < SIZE; ++i) {
-        suma += v[i].i1;
-    }
-    return suma;
+        for(int i = 0; i < SIZE; ++i) {
+                suma += v[i].i1;
+        }
+        return suma;
 }
 
 /**
@@ -55,25 +55,25 @@ int costeMem1() {
  * @return Sum of numbers from 0 to 10000.
  */
 int costeMem2() {
-    Prueba* p[SIZE];
-    volatile int suma = 0;
+        Prueba* p[SIZE];
+        volatile int suma = 0;
 
-    for(int i = 0; i < SIZE; ++i) {
-        p[i] = new Prueba;
-    }
+        for(int i = 0; i < SIZE; ++i) {
+                p[i] = new Prueba;
+        }
 
-    for(int i = 0; i < SIZE; ++i) {
-        (*p[i]).i1 = i;
-    }
+        for(int i = 0; i < SIZE; ++i) {
+                (*p[i]).i1 = i;
+        }
 
-    for(int i = 0; i < SIZE; ++i) {
-        suma += (*p[i]).i1;
-    }
+        for(int i = 0; i < SIZE; ++i) {
+                suma += (*p[i]).i1;
+        }
 
-    for(int i = 0; i < SIZE; ++i) {
-        free(p[i]);
-    }
-    return suma;
+        for(int i = 0; i < SIZE; ++i) {
+                free(p[i]);
+        }
+        return suma;
 }
 
 /**
@@ -81,103 +81,78 @@ int costeMem2() {
  * @return Sum of numbers from 0 to 10000.
  */
 int costeMem3() {
-    unique_ptr<Prueba[]> p(new Prueba[SIZE]);
-    volatile int suma = 0;
 
-    for(int i = 0; i < SIZE; ++i) {
-        p[i].i1 = i;
-    }
+        unique_ptr<Prueba> p[SIZE];
+        volatile int suma = 0;
 
-    for(int i = 0; i < SIZE; ++i) {
-        suma += p[i].i1;
-    }
+        for(int i = 0; i < SIZE; ++i) {
+                p[i] = unique_ptr<Prueba>{new Prueba};
+                p[i]->i1 = i;
+        }
 
-    p.reset();
-    return suma;
+        for(int i = 0; i < SIZE; ++i) {
+                suma += p[i]->i1;
+                p[i].reset();
+        }
+
+        return suma;
 }
 
 /**
  * Tests cost of allocation in dynamic memory using a shared pointer.
  * @return Sum of numbers from 0 to 10000.
  */
- int costeMem4() {
-   // shared_ptr<Prueba[]> p(new Prueba[SIZE]);
-   // volatile int suma = 0;
-   //
-   // for(int i = 0; i < SIZE; ++i) {
-   //     p[i].i1 = i;
-   // }
-   //
-   // for(int i = 0; i < SIZE; ++i) {
-   //     suma += p[i].i1;
-   // }
-   //
-   // p.reset();
-   // return suma;
+int costeMem4() {
+        shared_ptr<Prueba> p[SIZE];
+        volatile int suma = 0;
 
-     // shared_ptr<Prueba[]> sp(new Prueba[SIZE], [](Prueba *p) {
-     //     delete[] p;
-     // });
-     // volatile int suma = 0;
-
-     // new try
-     /*int j = 0;
-        for(auto i : *sp) {
-        i.i1 = j;
-        j++;
-        }
-        for (auto i : *sp) {
-        suma += i.i1;
-        }*/
-
-     // old ones
-     /*
-        for(int i = 0; i < SIZE; ++i, data++) {
-         data->i1 = i;
+        for(int i = 0; i < SIZE; ++i) {
+                p[i] = shared_ptr<Prueba>{new Prueba};
+                p[i]->i1 = i;
         }
 
-        for(int i = 0; i < SIZE; ++i, data--) {
-         suma += data->i1;
+        for(int i = 0; i < SIZE; ++i) {
+                suma += p[i]->i1;
+                p[i].reset();
         }
-        data = NULL;*/
-     //sp = NULL;
-     //return suma;
- }
+
+        return suma;
+}
 
 
 
 int main() {
 
-    timespec time;
+        timespec time;
 
-    cout << costeMem1() << endl;
-    cout << costeMem2() << endl;
-    cout << costeMem3() << endl;
-    cout << costeMem4() << endl;
+        cout << costeMem1() << endl;
+        cout << costeMem2() << endl;
+        cout << costeMem3() << endl;
+        cout << costeMem4() << endl;
 
-    startClock(time);
-    for(int i = 0; i < TESTS; ++i) {
-        costeMem1();
-    }
-    cout << "Time 1 (ms): " << (getTimeMs(time)/TESTS) << '\n';
+        startClock(time);
+        for(int i = 0; i < TESTS; ++i) {
+                costeMem1();
+        }
+        cout << "Time 1 (ms): " << (getTimeMs(time)/TESTS) << '\n';
 
-    startClock(time);
-    for(int i = 0; i < TESTS; ++i) {
-        costeMem2();
-    }
-    cout << "Time 2 (ms): " << (getTimeMs(time)/TESTS) << '\n';
+        startClock(time);
+        for(int i = 0; i < TESTS; ++i) {
+                costeMem2();
+        }
+        cout << "Time 2 (ms): " << (getTimeMs(time)/TESTS) << '\n';
 
-    startClock(time);
-    for(int i = 0; i < TESTS; ++i) {
-        costeMem3();
-    }
-    cout << "Time 3 (ms): " << (getTimeMs(time)/TESTS) << '\n';
+        startClock(time);
+        for(int i = 0; i < TESTS; ++i) {
+                costeMem3();
+        }
+        cout << "Time 3 (ms): " << (getTimeMs(time)/TESTS) << '\n';
 
-    // startClock(time);
-    // for(int i = 0; i < TESTS; ++i) {
-    //     costeMem4();
-    // }
-    // cout << "Time 4 (ms): " << (getTimeMs(time)/TESTS) << '\n';
+        startClock(time);
+        for(int i = 0; i < TESTS; ++i) {
+            costeMem4();
+        }
+        cout << "Time 4 (ms): " << (getTimeMs(time)/TESTS) << '\n';
 
-    return 0;
+        return 0;
 }
