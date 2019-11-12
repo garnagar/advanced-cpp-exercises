@@ -63,15 +63,15 @@ int costeMem2() {
         }
 
         for(int i = 0; i < SIZE; ++i) {
-                (*p[i]).i1 = i;
+                p[i]->i1 = i;
         }
 
         for(int i = 0; i < SIZE; ++i) {
-                suma += (*p[i]).i1;
+                suma += p[i]->i1;
         }
 
         for(int i = 0; i < SIZE; ++i) {
-                free(p[i]);
+                delete p[i];
         }
         return suma;
 }
