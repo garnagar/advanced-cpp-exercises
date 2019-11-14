@@ -1,12 +1,13 @@
 /**
  * Implementation of a hash table
- * 
+ *
  */
 #ifndef _TABLA_H
 #define _TABLA_H
 
 #include <string>
 #include <vector>
+#include <list>
 #include <iostream>
 #include "alumno.h"
 
@@ -22,16 +23,16 @@ public:
         TipoClave clave;
         TipoDato dato;
     };
-        
-    Tabla(unsigned); 
-    bool buscar(TipoClave, TipoDato&) ; 
-    void insertar(TipoClave, const TipoDato&); 
+
+    Tabla(unsigned);
+    bool buscar(TipoClave, TipoDato&) ;
+    void insertar(TipoClave, const TipoDato&);
     unsigned hash(TipoClave) const;
     void mostrar(std::ostream & sal) const;
 
 private:
-    typedef vector<Celda> ListaDatos; 
-    vector<ListaDatos> t;
+    typedef vector<Celda> ListaDatos;
+    list<ListaDatos> t;
 };
 
 #endif

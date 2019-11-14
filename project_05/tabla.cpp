@@ -19,6 +19,7 @@ void Tabla::insertar(TipoClave clave, const TipoDato & valor)
 {
     unsigned i;
     i = hash(clave);
+
     t[i].push_back(Celda{clave,valor} );
 }
 
@@ -28,13 +29,13 @@ void Tabla::insertar(TipoClave clave, const TipoDato & valor)
  * @param valor Value founded with key "clave"
  * @return true if element founded, false otherwise
  */
-bool Tabla::buscar(TipoClave clave, TipoDato & valor) 
+bool Tabla::buscar(TipoClave clave, TipoDato & valor)
 {
     unsigned i;
     i = hash(clave);
     for(unsigned j=0; j < t[i].size(); j++)
     {
-       if(t[i][j].clave == clave) 
+       if(t[i][j].clave == clave)
        {
            valor = t[i][j].dato;
            return true;
@@ -50,11 +51,11 @@ bool Tabla::buscar(TipoClave clave, TipoDato & valor)
 unsigned Tabla::hash(TipoClave clave) const
 {
     unsigned long h = 5381;
-    
+
     // Solo valido para strings
     for(unsigned i = 0; i < clave.size(); i++)
         h = ((h << 5) + h) + clave[i];
-        
+
     return h % t.size();
 }
 
