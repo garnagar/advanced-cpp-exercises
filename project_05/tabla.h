@@ -32,7 +32,7 @@ public:
 
 private:
     typedef vector<Celda> ListaDatos;
-    list<ListaDatos> t;
+    vector<ListaDatos> t;
 };
 
 #endif
