@@ -13,21 +13,21 @@
 using std::string;
 using std::vector;
 
-template<typename KeyType, typename ValType>
+template <typename TipoClave, typename TipoDato>
 class Tabla
 {
 public:
     // typedef string TipoClave;
     // typedef Alumno TipoDato;
     struct Celda {
-        KeyType clave;
-        ValType dato;
+        TipoClave clave;
+        TipoDato dato;
     };
 
     Tabla(unsigned);
-    bool buscar(KeyType, ValType&) ;
-    void insertar(KeyType, const ValType&);
-    unsigned hash(KeyType) const;
+    bool buscar(TipoClave, TipoDato&) ;
+    void insertar(TipoClave, const TipoDato&);
+    unsigned hash(TipoClave) const;
     void mostrar(std::ostream & sal) const;
 
 private:
