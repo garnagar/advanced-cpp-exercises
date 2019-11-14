@@ -19,8 +19,10 @@ void Tabla::insertar(TipoClave clave, const TipoDato & valor)
 {
     unsigned i;
     i = hash(clave);
+    auto it = t.begin();
+    std::advance(it,i);
 
-    t[i].push_back(Celda{clave,valor} );
+    (*it).push_back(Celda{clave,valor} );
 }
 
 /**
@@ -33,14 +35,16 @@ bool Tabla::buscar(TipoClave clave, TipoDato & valor)
 {
     unsigned i;
     i = hash(clave);
-    for(unsigned j=0; j < t[i].size(); j++)
-    {
-       if(t[i][j].clave == clave)
-       {
-           valor = t[i][j].dato;
-           return true;
-       }
+    auto it = t.begin();
+    std::advance(it,i);
+
+    for(auto it2 = (*it).begin(); it2 != (*it).end(); ++it2) {
+      if((*it2).clave == clave) {
+        valor = (*it2).dato;
+        return true;
+      }
     }
+
     return false;
 }
 
@@ -65,11 +69,11 @@ unsigned Tabla::hash(TipoClave clave) const
  */
 void Tabla::mostrar(std::ostream & sal) const
 {
-    for(unsigned i = 0; i < t.size(); i++)
-    {
-        sal << i << ":" ;
-        for(unsigned j = 0; j < t[i].size(); j++)
-            sal << t[i][j].dato << " -> ";
-        sal << std::endl;
+    unsigned index = 0;
+    for(auto it = t.begin(); it != t.end(); ++it) {
+      sal << index++ << ":";
+      for(auto it2 = (*it).begin(); it2 != (*it).end(); ++it2)
+          sal << (*it2).dato << " -> ";
+      sal << std::endl;
     }
 }

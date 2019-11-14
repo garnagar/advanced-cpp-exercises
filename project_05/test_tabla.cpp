@@ -1,13 +1,14 @@
 #include <iostream>
 #include <string>
-#include "tabla.h"
+#include <list>
+#include "tabla_t.h"
 #include "alumno.h"
 
 #define NUM_SUTDENTS 200
 
 using namespace std;
 
-void printStudentByKey(Tabla table, string key) {
+void printStudentByKey(Table<string,Alumno,list> table, string key) {
   Alumno searchedStudent;
   if(table.buscar(key, searchedStudent)) {
     cout << searchedStudent << '\n';
@@ -16,12 +17,15 @@ void printStudentByKey(Tabla table, string key) {
 }
 
 int main() {
-  Tabla table(NUM_SUTDENTS);
+  Tabla table<string,Alumno,list>(NUM_SUTDENTS);
   for(int i = 0; i < NUM_SUTDENTS; ++i) {
-    table.insertar(to_string(i),Alumno(i));
+    Alumno a(i);
+    table.insertar(a.getDNI(),a);
   }
   printStudentByKey(table,"100");
   printStudentByKey(table,"200");
+
+  table.mostrar(cout);
 
   return 0;
 }
