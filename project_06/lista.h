@@ -9,7 +9,11 @@
 #ifndef _LISTA_H
 #define _LISTA_H
 
-#include<iostream>
+#include <iostream>
+#include <iterator>
+
+template<typename T>
+class ListaIterator;
 
 /**
  * Lista simplemente enlazada
@@ -25,14 +29,28 @@ class Lista
     };
 
     typedef Nodo * PtrNodo;
-
     PtrNodo ptr;
-public:
-    Lista():ptr(nullptr) {}
-    void push_front(const T &);
-    void mostrar() const;
-private:
     friend class ListaIterator<T>;
+
+public:
+    using value_type = T;
+    using iterator = ListaIterator<T>;
+
+    Lista():ptr(nullptr) {}
+
+    void push_front(const T &);
+
+    void mostrar() const;
+
+    ListaIterator<T> begin(){
+      ListaIterator<T> itr(ptr);
+      return itr;
+    }
+
+    ListaIterator<T> end(){
+      ListaIterator<T> itr(nullptr);
+      return itr;
+    }
 };
 
 /**
@@ -62,5 +80,48 @@ void Lista<T>::mostrar() const
         aux = aux->sig;
     }
 }
+
+/**
+* Custom iterator for the Lista class
+* @tparam T data stored in Lista container
+*/
+template<typename T>
+class ListaIterator : public std::iterator<std::forward_iterator_tag, T> {
+private:
+
+  typename Lista<T>::Nodo* ptr_;
+
+public:
+
+  ListaIterator(){}
+
+  ListaIterator(typename Lista<T>::Nodo* ptr) {
+    ptr_ = ptr;
+  }
+
+  ListaIterator operator++() {
+          ptr_ = ptr_->sig;
+          return *this;
+  }
+
+  ListaIterator<T> operator++(int junk) {
+          ListaIterator<T> i = *this;
+          ptr_ = ptr_->sig;
+          return i;
+  }
+
+  T& operator*() {
+          return ptr_->valor;
+  }
+
+  bool operator==(const ListaIterator& rhs) {
+          return ptr_ == rhs.ptr_;
+  }
+
+  bool operator!=(const ListaIterator& rhs) {
+          return ptr_ != rhs.ptr_;
+  }
+
+};
 
 #endif

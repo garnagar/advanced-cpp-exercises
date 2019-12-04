@@ -1,11 +1,14 @@
 
-#include "tabla.h"
+#include "tabla_t.h"
 
 /**
  * Constructor of class
  * @param tam Size of table. Must be double of the number of elements.
  */
-Tabla::Tabla(unsigned tam)
+ template <typename TipoClave, typename TipoDato,
+ template <typename,typename> class Container,
+ typename Policy>
+Tabla<TipoClave,TipoDato,Container,Policy>::Tabla(unsigned tam)
 {
     t.resize(tam);
 }
@@ -15,7 +18,10 @@ Tabla::Tabla(unsigned tam)
  * @param clave Key of the element
  * @param valor Value to be stored
  */
-void Tabla::insertar(TipoClave clave, const TipoDato & valor)
+ template <typename TipoClave, typename TipoDato,
+ template <typename,typename> class Container,
+ typename Policy>
+void Tabla<TipoClave,TipoDato,Container,Policy>::insertar(TipoClave clave, const TipoDato & valor)
 {
     unsigned i;
     i = hash(clave);
@@ -31,7 +37,10 @@ void Tabla::insertar(TipoClave clave, const TipoDato & valor)
  * @param valor Value founded with key "clave"
  * @return true if element founded, false otherwise
  */
-bool Tabla::buscar(TipoClave clave, TipoDato & valor)
+ template <typename TipoClave, typename TipoDato,
+ template <typename,typename> class Container,
+ typename Policy>
+bool Tabla<TipoClave,TipoDato,Container,Policy>::buscar(TipoClave clave, TipoDato & valor)
 {
     unsigned i;
     i = hash(clave);
@@ -49,25 +58,26 @@ bool Tabla::buscar(TipoClave clave, TipoDato & valor)
 }
 
 /**
- * Hash function for strings
+ * Hash function controled by HashPolicy.
  * @param clave Key
  */
-unsigned Tabla::hash(TipoClave clave) const
+ template <typename TipoClave, typename TipoDato,
+ template <typename,typename> class Container,
+ typename Policy>
+unsigned Tabla<TipoClave,TipoDato,Container,Policy>::hash(TipoClave clave) const
 {
-    unsigned long h = 5381;
 
-    // Solo valido para strings
-    for(unsigned i = 0; i < clave.size(); i++)
-        h = ((h << 5) + h) + clave[i];
-
-    return h % t.size();
+    return Policy::hash(clave,t.size());
 }
 
 /**
  * Write the hash table to a stream
  * @param sal output stream
  */
-void Tabla::mostrar(std::ostream & sal) const
+ template <typename TipoClave, typename TipoDato,
+ template <typename,typename> class Container,
+ typename Policy>
+void Tabla<TipoClave,TipoDato,Container,Policy>::mostrar(std::ostream & sal) const
 {
     unsigned index = 0;
     for(auto it = t.begin(); it != t.end(); ++it) {

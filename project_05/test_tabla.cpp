@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <list>
+#include <vector>
 #include "tabla_t.h"
 #include "alumno.h"
 
@@ -8,7 +8,14 @@
 
 using namespace std;
 
-void printStudentByKey(Table<string,Alumno,list> table, string key) {
+class CustomHashPolicy{
+public:
+  static const unsigned hash(float clave, int t_size) {
+    return (int) clave %t_size;
+  }
+};
+
+void printStudentByKey(Table<string,Alumno,list,CustomHashPolicy> table, string key) {
   Alumno searchedStudent;
   if(table.buscar(key, searchedStudent)) {
     cout << searchedStudent << '\n';
@@ -17,7 +24,7 @@ void printStudentByKey(Table<string,Alumno,list> table, string key) {
 }
 
 int main() {
-  Tabla table<string,Alumno,list>(NUM_SUTDENTS);
+  Tabla<string,int,vector,CustomHashPolicy> table = Tabla<string,int,vector>(NUM_SUTDENTS);
   for(int i = 0; i < NUM_SUTDENTS; ++i) {
     Alumno a(i);
     table.insertar(a.getDNI(),a);
