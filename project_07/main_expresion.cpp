@@ -17,14 +17,14 @@ int main()
         x[i] = 2;
         y[i] = 3;
     }
-    
-    x = 1.2 * x + y;
-    
+
+     x = (1.2 + x) * y + ( (2.0 * y) ^ 2.0 );
+
     for(unsigned i = 0; i < 10; i++)
     {
         cout << x[i] << " ";
     }
     cout << endl;
-    
+
     return 0;
 }
