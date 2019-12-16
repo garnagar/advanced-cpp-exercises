@@ -3,7 +3,7 @@
 #ifndef _SARRAY2_H
 #define _SARRAY2_H
 
-#include <cmath>
+#include "expresion.h"
 
 using std::pow;
 
@@ -63,7 +63,7 @@ protected:
     }
 };
 
-// function template for the + operator
+// function template for the + operator for two vectors
 template<typename T>
 SArray2<T> operator+ (const SArray2<T>& a, const SArray2<T>& b){
   SArray2<T> result(a.size());
@@ -73,7 +73,17 @@ SArray2<T> operator+ (const SArray2<T>& a, const SArray2<T>& b){
   return result;
 }
 
-// function template for the * operator
+// function template for the + operator for a vector and a scalar
+template<typename T>
+SArray2<T> operator+ (const SArray2<T>& a, const T& b){
+  SArray2<T> result(a.size());
+  for (std::size_t s= 0; s <= a.size(); ++s){
+    result[s]= a[s]+b;
+  }
+  return result;
+}
+
+// function template for the * operator for two vectors
 template<typename T>
 SArray2<T> operator* (const SArray2<T>& a, const SArray2<T>& b){
    SArray2<T> result(a.size());
@@ -83,12 +93,22 @@ SArray2<T> operator* (const SArray2<T>& a, const SArray2<T>& b){
   return result;
 }
 
-// function template for the ^ operator
+// function template for the * operator for a vector and a scalar
 template<typename T>
-SArray2<T> operator^ (const SArray2<T>& a, const SArray2<T>& b){
+SArray2<T> operator* (const SArray2<T>& a, const T& b){
    SArray2<T> result(a.size());
   for (std::size_t s= 0; s <= a.size(); ++s){
-    result[s]= pow(a[s], b[s]);
+    result[s]= a[s]*b;
+  }
+  return result;
+}
+
+// function template for the ^ operator for a vector and a scalar
+template<typename T>
+SArray2<T> operator^ (const SArray2<T>& a, const T& b){
+   SArray2<T> result(a.size());
+  for (std::size_t s= 0; s <= a.size(); ++s){
+    result[s]= pow(a[s], b);
   }
   return result;
 }
