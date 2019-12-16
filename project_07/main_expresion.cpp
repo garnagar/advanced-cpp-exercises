@@ -2,6 +2,8 @@
 
 #include<iostream>
 #include "expresion.h"
+#include "Eigen/Dense"
+#include "sarray2.h"
 
 using std::cout;
 using std::endl;
@@ -10,6 +12,7 @@ const unsigned TAM = 1000000;
 
 int main()
 {
+    // SECTION 1
     Array<double> x(TAM), y(TAM);
 
     for(unsigned i = 0; i < TAM; i++)
@@ -23,6 +26,43 @@ int main()
     for(unsigned i = 0; i < 10; i++)
     {
         cout << x[i] << " ";
+    }
+    cout << endl;
+
+    // SECTION 2
+    SArray2<double> sx(TAM);
+    SArray<double> sy(TAM);
+
+    for(unsigned i = 0; i < TAM; i++)
+    {
+        sx[i] = 2;
+        sy[i] = 3;
+    }
+
+     x = (1.2 + sx) * sy + ( (2.0 * sy) ^ 2.0 );
+
+    for(unsigned i = 0; i < 10; i++)
+    {
+        cout << sx[i] << " ";
+    }
+    cout << endl;
+
+    // SECTION 4
+
+    ArrayXd eigx(TAM);
+    ArrayXd eigy(TAM);
+    
+    for(unsigned i = 0; i < TAM; i++)
+    {
+        eigx(i) = 2;
+        eigy(i) = 3;
+    }
+
+    eigx = (1.2 + eigx) * eigy + (pow((2.0 * eigy), 2.0));
+
+    for(unsigned i = 0; i < 10; i++)
+    {
+        cout << eigx(i) << " ";
     }
     cout << endl;
 
