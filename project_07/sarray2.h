@@ -75,10 +75,10 @@ SArray2<T> operator+ (const SArray2<T>& a, const SArray2<T>& b){
 
 // function template for the + operator for a vector and a scalar
 template<typename T>
-SArray2<T> operator+ (const SArray2<T>& a, const T& b){
-  SArray2<T> result(a.size());
-  for (std::size_t s= 0; s <= a.size(); ++s){
-    result[s]= a[s]+b;
+SArray2<T> operator+ (const T& a, const SArray2<T>& b){
+  SArray2<T> result(b.size());
+  for (std::size_t s= 0; s <= b.size(); ++s){
+    result[s]= a + b[s];
   }
   return result;
 }
@@ -95,10 +95,10 @@ SArray2<T> operator* (const SArray2<T>& a, const SArray2<T>& b){
 
 // function template for the * operator for a vector and a scalar
 template<typename T>
-SArray2<T> operator* (const SArray2<T>& a, const T& b){
-   SArray2<T> result(a.size());
-  for (std::size_t s= 0; s <= a.size(); ++s){
-    result[s]= a[s]*b;
+SArray2<T> operator* (const T& a, const SArray2<T>& b){
+   SArray2<T> result(b.size());
+  for (std::size_t s= 0; s <= b.size(); ++s){
+    result[s]= a * b[s];
   }
   return result;
 }
