@@ -29,7 +29,7 @@ int main()
     }
     cout << endl;
 
-    // SECTION 2
+    //SECTION 2
     SArray2<double> sx(TAM);
     SArray2<double> sy(TAM);
 
@@ -47,7 +47,7 @@ int main()
     }
     cout << endl;
 
-    // SECTION 4
+    //SECTION 4
 
     Eigen::ArrayXd eigx(TAM);
     Eigen::ArrayXd eigy(TAM);
