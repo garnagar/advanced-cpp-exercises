@@ -31,7 +31,7 @@ int main()
 
     // SECTION 2
     SArray2<double> sx(TAM);
-    SArray<double> sy(TAM);
+    SArray2<double> sy(TAM);
 
     for(unsigned i = 0; i < TAM; i++)
     {
@@ -39,7 +39,7 @@ int main()
         sy[i] = 3;
     }
 
-     x = (1.2 + sx) * sy + ( (2.0 * sy) ^ 2.0 );
+     sx = (1.2 + sx) * sy + ( (2.0 * sy) ^ 2.0 );
 
     for(unsigned i = 0; i < 10; i++)
     {
@@ -49,9 +49,9 @@ int main()
 
     // SECTION 4
 
-    ArrayXd eigx(TAM);
-    ArrayXd eigy(TAM);
-    
+    Eigen::ArrayXd eigx(TAM);
+    Eigen::ArrayXd eigy(TAM);
+
     for(unsigned i = 0; i < TAM; i++)
     {
         eigx(i) = 2;
