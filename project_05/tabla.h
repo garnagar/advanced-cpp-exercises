@@ -1,4 +1,10 @@
 /**
+* Project: Advanced Programming Lab Excercise 05
+* Authors: Lukas Kyzlik and Matej Sojak
+* Date: 04/12/2019
+*/
+
+/**
  * Implementation of a hash table
  *
  */

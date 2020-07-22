@@ -1,3 +1,9 @@
+/**
+* Project: Advanced Programming Lab Excercise 03
+* Authors: Lukas Kyzlik and Matej Sojak
+* Date: 29/10/2019
+*/
+
 #include <stdlib.h>
 #include <iostream>
 #include <vector>

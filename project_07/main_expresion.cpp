@@ -1,4 +1,8 @@
-
+/**
+* Project: Advanced Programming Lab Excercise 07
+* Authors: Lukas Kyzlik and Matej Sojak
+* Date: 17/12/2019
+*/
 
 #include<iostream>
 #include "expresion.h"

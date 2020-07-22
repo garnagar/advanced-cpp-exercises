@@ -1,3 +1,9 @@
+/**
+* Project: Advanced Programming Lab Excercise 04
+* Authors: Lukas Kyzlik and Matej Sojak
+* Date: 12/11/2019
+*/
+
 #include <iostream>
 #include <memory>
 

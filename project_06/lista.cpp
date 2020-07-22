@@ -1,3 +1,9 @@
+/**
+* Project: Advanced Programming Lab Excercise 06
+* Authors: Lukas Kyzlik and Matej Sojak
+* Date: 04/12/2019
+*/
+
 #include "lista.h"
 #include <vector>
 #include <algorithm>
